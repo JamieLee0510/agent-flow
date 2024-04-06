@@ -33,9 +33,6 @@ const Sidebar = () => {
                     </li>
                 </ul>
             ))}
-            <div className="flex items-center justify-center flex-col gap-8">
-                <ModeToggle />
-            </div>
         </nav>
     );
 };
