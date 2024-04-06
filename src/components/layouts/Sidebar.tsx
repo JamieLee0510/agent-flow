@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sideMenuOptions } from "@/lib/const";
 import clsx from "clsx";
+import ModeToggle from "@/components/layouts/ModeToggle";
 
 const Sidebar = () => {
     const pathName = usePathname();
@@ -32,6 +33,9 @@ const Sidebar = () => {
                     </li>
                 </ul>
             ))}
+            <div className="flex items-center justify-center flex-col gap-8">
+                <ModeToggle />
+            </div>
         </nav>
     );
 };
