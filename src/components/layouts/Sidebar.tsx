@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sideMenuOptions } from "@/lib/const";
 import clsx from "clsx";
-import ModeToggle from "@/components/layouts/ModeToggle";
+import ModeToggle from "@/components/layouts/model-toggle";
 
 const Sidebar = () => {
     const pathName = usePathname();
