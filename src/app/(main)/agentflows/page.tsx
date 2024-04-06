@@ -1,6 +1,8 @@
 import React from "react";
 
 import AgentflowButton from "./_components/agentflow-btn";
+import Agentsflows from "./_components";
+
 export default function Page() {
     return (
         <div className="flex flex-col relative">
@@ -8,6 +10,7 @@ export default function Page() {
                 Agentflows
                 <AgentflowButton />
             </h1>
+            <Agentsflows />
             {/* <Workflows /> */}
         </div>
     );
