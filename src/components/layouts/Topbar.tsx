@@ -1,5 +1,5 @@
 import React from "react";
-import ModeToggle from "./ModeToggle";
+import ModeToggle from "./model-toggle";
 
 export default function Topbar() {
     return (
