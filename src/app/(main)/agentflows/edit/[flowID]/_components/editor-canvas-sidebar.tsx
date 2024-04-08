@@ -8,15 +8,22 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Card } from "@/components/ui/card";
+import {
+    Card,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
-import { CONNECTIONS } from "@/lib/const";
+import { CONNECTIONS, AgentDefaultCards } from "@/lib/const";
 import { useEffect, useState } from "react";
 import { useSlackStore } from "@/store";
 import { fetchBotSlackChannels } from "@/lib/editor-utils";
 import ActionButton from "./action-btn";
+import EditorAgentIcon from "./editor-agent-icon";
+import { AgentType } from "@/lib/types";
 
 type Props = {
     nodes: any[];
@@ -55,7 +62,27 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                     value="actions"
                     className="flex flex-col gap-4 p-4"
                 >
-                    <div>hihi actions</div>
+                    {Object.entries(AgentDefaultCards).map(
+                        ([cardKey, cardValue]) => (
+                            <Card
+                                key={cardKey}
+                                draggable
+                                className="w-full cursor-grab border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900"
+                            >
+                                <CardHeader className="flex flex-row items-center gap-4 p-4">
+                                    <EditorAgentIcon
+                                        type={cardKey as AgentType}
+                                    />
+                                    <CardTitle className="text-md">
+                                        {cardKey}
+                                        <CardDescription>
+                                            {cardValue.description}
+                                        </CardDescription>
+                                    </CardTitle>
+                                </CardHeader>
+                            </Card>
+                        ),
+                    )}
                 </TabsContent>
                 <TabsContent value="settings" className="-mt-6">
                     <div className="px-2 py-4 text-center text-xl font-bold">
