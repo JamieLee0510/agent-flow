@@ -1,5 +1,10 @@
 import React from "react";
+import EditorCanvas from "./_components/editor-canvas";
 
 export default function AgentFlowEditor() {
-    return <div>AgentFlowEditor</div>;
+    return (
+        <div className="h-full">
+            <EditorCanvas />
+        </div>
+    );
 }
