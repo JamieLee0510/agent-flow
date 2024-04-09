@@ -20,7 +20,7 @@ import ConnectionCard from "@/app/(main)/connections/_components/connection-card
 import { CONNECTIONS, AgentDefaultCards } from "@/lib/const";
 import { useEffect, useState } from "react";
 import { useSlackStore } from "@/store";
-import { fetchBotSlackChannels } from "@/lib/editor-utils";
+import { fetchBotSlackChannels, onDragStart } from "@/lib/editor-utils";
 import ActionButton from "./action-btn";
 import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
@@ -68,6 +68,9 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                                 key={cardKey}
                                 draggable
                                 className="w-full cursor-grab border-black bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-900"
+                                onDragStart={(event) => {
+                                    onDragStart(event, cardKey as AgentType);
+                                }}
                             >
                                 <CardHeader className="flex flex-row items-center gap-4 p-4">
                                     <EditorAgentIcon

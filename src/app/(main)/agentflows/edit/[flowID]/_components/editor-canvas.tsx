@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import ReactFlow, {
     Background,
@@ -13,31 +13,92 @@ import ReactFlow, {
     applyNodeChanges,
     applyEdgeChanges,
     addEdge,
+    useNodesState,
+    useEdgesState,
 } from "reactflow";
 import "reactflow/dist/style.css";
+import { v4 as uuidV4 } from "uuid";
+
 import EditorCanvasSidebar from "./editor-canvas-sidebar";
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { AgentType, EditorNodeType } from "@/lib/types";
+import EditorCanvasItem from "./editot-canvas-item";
+import { AgentDefaultCards } from "@/lib/const";
 
-const initialNodes = [
-    { id: "1", position: { x: 0, y: 0 }, data: { label: "1" } },
-    { id: "2", position: { x: 0, y: 100 }, data: { label: "2" } },
-];
-const initialEdges = [{ id: "e1-2", source: "1", target: "2" }];
+const initialNodes: EditorNodeType[] = [];
+
+const initialEdges: { id: string; source: string; target: string }[] = [];
+
+const nodeTypes = {
+    [AgentType.Trigger]: EditorCanvasItem,
+    [AgentType.Slack]: EditorCanvasItem,
+    [AgentType.LLM]: EditorCanvasItem,
+};
 
 export default function EditorCanvas() {
-    const nodes: any[] = [];
-    const edges: any[] = [];
-    const nodeTypes = undefined;
-    const onDrop = () => {};
-    const onDragOver = () => {};
-    const onNodesChange = () => {};
-    const onEdgesChange = () => {};
-    const onConnect = () => {};
-    const setReactFlowInstance = () => {};
+    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [reactFlowInstance, setReactFlowInstance] =
+        useState<ReactFlowInstance>();
+
+    const onDrop = useCallback(
+        (event: any) => {
+            event.preventDefault();
+
+            const type = event.dataTransfer.getData("application/reactflow");
+            console.log("---onDrop type:", type);
+            // check if the dropped element is valid
+            if (typeof type === "undefined" || !type) {
+                return;
+            }
+
+            // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+            // and you don't need to subtract the reactFlowBounds.left/top anymore
+            // details: https://reactflow.dev/whats-new/2023-11-10
+            if (!reactFlowInstance) return;
+            const position = reactFlowInstance.screenToFlowPosition({
+                x: event.clientX,
+                y: event.clientY,
+            });
+
+            console.log(
+                "--desc:",
+                AgentDefaultCards[type as AgentType].description,
+            );
+            const newNode = {
+                id: uuidV4(),
+                type,
+                position,
+                data: {
+                    title: type,
+                    description:
+                        AgentDefaultCards[type as AgentType].description,
+                    completed: false,
+                    current: false,
+                    metadata: {},
+                    type: type,
+                },
+            };
+
+            setNodes((nds) => nds.concat(newNode));
+        },
+        [reactFlowInstance],
+    );
+
+    // react flow example
+    const onDragOver = useCallback((event: any) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+    }, []);
+
+    const onConnect = useCallback((params: any) => {
+        console.log("---params:", params);
+        setEdges((eds) => addEdge(params, eds));
+    }, []);
     const handleClickCanvas = () => {};
     return (
         <ResizablePanelGroup direction="horizontal">
@@ -53,8 +114,8 @@ export default function EditorCanvas() {
                     >
                         <ReactFlow
                             className="w-[300px]"
-                            nodes={initialNodes}
-                            edges={initialEdges}
+                            nodes={nodes}
+                            edges={edges}
                             onDrop={onDrop}
                             onDragOver={onDragOver}
                             onNodesChange={onNodesChange}
