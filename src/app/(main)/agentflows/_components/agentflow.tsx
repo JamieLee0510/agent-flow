@@ -34,8 +34,8 @@ const Agentflow = ({ description, id, name, publish }: Props) => {
                 <Link href={`/agentflows/edit/${id}`}>
                     <div className="flex flex-row gap-2">
                         <Image
-                            src="/googleDrive.png"
-                            alt="Google Drive"
+                            src="/chatgpt.png"
+                            alt="ChatGPT"
                             height={30}
                             width={30}
                             className="object-contain"

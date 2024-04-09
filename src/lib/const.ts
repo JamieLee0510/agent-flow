@@ -19,6 +19,8 @@ export const CONNECTIONS = [
     },
 ];
 
+export const CurrentDisableAgent = [AgentType.Email, AgentType.Condition];
+
 export const AgentDefaultCards: { [key in AgentType]: any } = {
     [AgentType.LLM]: {
         description:
