@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import ReactFlow, {
     Background,
@@ -28,6 +28,7 @@ import {
 import { AgentType, EditorNodeType } from "@/lib/types";
 import EditorCanvasItem from "./editot-canvas-item";
 import { AgentDefaultCards } from "@/lib/const";
+import { useAgentNodeStore } from "../_store/agent-node-store";
 
 const initialNodes: EditorNodeType[] = [];
 
@@ -42,6 +43,12 @@ const nodeTypes = {
 export default function EditorCanvas() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const { setAgentNodes } = useAgentNodeStore();
+
+    useEffect(() => {
+        setAgentNodes(nodes);
+    }, [nodes]);
+
     const [reactFlowInstance, setReactFlowInstance] =
         useState<ReactFlowInstance>();
 
@@ -96,10 +103,12 @@ export default function EditorCanvas() {
     }, []);
 
     const onConnect = useCallback((params: any) => {
-        console.log("---params:", params);
         setEdges((eds) => addEdge(params, eds));
     }, []);
-    const handleClickCanvas = () => {};
+    const handleClickCanvas = (data: any) => {
+        // TODO: setting info in sidebar
+        // so need state of "current node"
+    };
     return (
         <ResizablePanelGroup direction="horizontal">
             <ResizablePanel defaultSize={70}>

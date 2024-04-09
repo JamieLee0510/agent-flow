@@ -28,6 +28,7 @@ import { fetchBotSlackChannels, onDragStart } from "@/lib/editor-utils";
 import ActionButton from "./action-btn";
 import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
+import { useAgentNodeStore } from "../_store/agent-node-store";
 
 type Props = {
     nodes: any[];
@@ -42,6 +43,9 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
         setSelectedSlackChannels,
     } = useSlackStore();
 
+    const { agentNodes, setAgentNodes, currAgentNodeId } = useAgentNodeStore();
+    const [currentNode, setCurrentNode] = useState<any>(null); // TODO: agentNodeType
+
     const [slackMsg, setSlackMsg] = useState("");
 
     // TODO: while init or slack connection, fetch the slack-channels
@@ -50,6 +54,16 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
             "xoxb-6913220856837-6907375328775-dC2rIjyvIpFkv8ZzjY5sO6Fb";
         fetchBotSlackChannels(token, setSlackChannels);
     }, []);
+
+    useEffect(() => {
+        const node = agentNodes.filter((item) => item.id == currAgentNodeId)[0];
+        if (!node) {
+            setCurrentNode(null);
+        } else {
+            // TODO: should take the previous agent output
+            setCurrentNode(node);
+        }
+    }, [agentNodes, currAgentNodeId]);
 
     return (
         <aside>
@@ -106,78 +120,98 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                     )}
                 </TabsContent>
                 <TabsContent value="settings" className="-mt-6">
-                    <div className="px-2 py-4 text-center text-xl font-bold">
-                        node title(Slack)
-                    </div>
-                    <Accordion type="multiple">
-                        <AccordionItem
-                            value="Options"
-                            className="border-y-[1px] px-2"
-                        >
-                            <AccordionTrigger className="!no-underline">
-                                Account
-                            </AccordionTrigger>
+                    {currentNode ? (
+                        <>
+                            <div className="px-2 py-4 text-center text-xl font-bold">
+                                node title(Slack)
+                            </div>
+                            <Accordion type="multiple">
+                                <AccordionItem
+                                    value="Options"
+                                    className="border-y-[1px] px-2"
+                                >
+                                    <AccordionTrigger className="!no-underline">
+                                        Account
+                                    </AccordionTrigger>
 
-                            <AccordionContent>
-                                <ConnectionCard
-                                    title={CONNECTIONS[0].title}
-                                    icon={CONNECTIONS[0].image}
-                                    description={CONNECTIONS[0].description}
-                                    isConnected={true}
-                                />
-                                <div className="p-10">
-                                    {slackChannels?.length ? (
-                                        <>
-                                            <div className="mb-4 ml-1">
-                                                Select the slack channels to
-                                                send notification and messages:
-                                            </div>
-                                            <MultipleSelector
-                                                value={selectedSlackChannels}
-                                                onChange={
-                                                    setSelectedSlackChannels
-                                                }
-                                                defaultOptions={slackChannels}
-                                                placeholder="Select channels"
-                                                emptyIndicator={
-                                                    <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
-                                                        no results found.
-                                                    </p>
+                                    <AccordionContent>
+                                        <ConnectionCard
+                                            title={CONNECTIONS[0].title}
+                                            icon={CONNECTIONS[0].image}
+                                            description={
+                                                CONNECTIONS[0].description
+                                            }
+                                            isConnected={true}
+                                        />
+                                        <div className="p-10">
+                                            {slackChannels?.length ? (
+                                                <>
+                                                    <div className="mb-4 ml-1">
+                                                        Select the slack
+                                                        channels to send
+                                                        notification and
+                                                        messages:
+                                                    </div>
+                                                    <MultipleSelector
+                                                        value={
+                                                            selectedSlackChannels
+                                                        }
+                                                        onChange={
+                                                            setSelectedSlackChannels
+                                                        }
+                                                        defaultOptions={
+                                                            slackChannels
+                                                        }
+                                                        placeholder="Select channels"
+                                                        emptyIndicator={
+                                                            <p className="text-center text-lg leading-10 text-gray-600 dark:text-gray-400">
+                                                                no results
+                                                                found.
+                                                            </p>
+                                                        }
+                                                    />
+                                                </>
+                                            ) : (
+                                                "No Slack channels found. Please add your Slack bot to your Slack channel"
+                                            )}
+                                        </div>
+                                    </AccordionContent>
+                                </AccordionItem>
+                                <AccordionItem
+                                    value="Expected Output"
+                                    className="px-2"
+                                >
+                                    <AccordionTrigger className="!no-underline">
+                                        Action
+                                    </AccordionTrigger>
+                                    <Card>
+                                        <div className="flex flex-col gap-3 px-6 py-3 pb-20">
+                                            <p>Message</p>
+                                            <Input
+                                                type="text"
+                                                value={slackMsg}
+                                                onChange={(event) =>
+                                                    setSlackMsg(
+                                                        event.target.value,
+                                                    )
                                                 }
                                             />
-                                        </>
-                                    ) : (
-                                        "No Slack channels found. Please add your Slack bot to your Slack channel"
-                                    )}
-                                </div>
-                            </AccordionContent>
-                        </AccordionItem>
-                        <AccordionItem value="Expected Output" className="px-2">
-                            <AccordionTrigger className="!no-underline">
-                                Action
-                            </AccordionTrigger>
-                            <Card>
-                                <div className="flex flex-col gap-3 px-6 py-3 pb-20">
-                                    <p>Message</p>
-                                    <Input
-                                        type="text"
-                                        value={slackMsg}
-                                        onChange={(event) =>
-                                            setSlackMsg(event.target.value)
-                                        }
-                                    />
-                                    <ActionButton
-                                        channels={selectedSlackChannels}
-                                        content={slackMsg}
-                                    />
-                                </div>
-                            </Card>
-                            {/* <RenderOutputAccordion
-                                state={state}
-                                nodeConnection={nodeConnection}
-                            /> */}
-                        </AccordionItem>
-                    </Accordion>
+                                            <ActionButton
+                                                channels={selectedSlackChannels}
+                                                content={slackMsg}
+                                            />
+                                        </div>
+                                    </Card>
+                                    {/* <RenderOutputAccordion
+                                    state={state}
+                                    nodeConnection={nodeConnection}
+                                /> */}
+                                </AccordionItem>
+                            </Accordion>
+                        </>
+                    ) : (
+                        "no data"
+                    )}
                 </TabsContent>
             </Tabs>
         </aside>

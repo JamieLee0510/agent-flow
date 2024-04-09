@@ -8,10 +8,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { useAgentNodeStore } from "../_store/agent-node-store";
 
 // TODO: data type
 export default function EditorCanvasItem({ data }: any) {
     const nodeId = useNodeId();
+    const { setCurAgentNodeId } = useAgentNodeStore();
     const logo = useMemo(() => {
         return <EditorAgentIcon type={data.type} />;
     }, [data]);
@@ -27,7 +29,8 @@ export default function EditorCanvasItem({ data }: any) {
             )}
             <Card
                 onClick={() => {
-                    console.log("---edit from sidebar");
+                    console.log("---edit from sidebar, data:", nodeId);
+                    setCurAgentNodeId(nodeId);
                 }}
                 className="relative max-w-[400px] dard:border-muted-foreground/70"
             >
