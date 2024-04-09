@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { sideMenuOptions } from "@/lib/const";
 import clsx from "clsx";
-import ModeToggle from "@/components/layouts/model-toggle";
 
 const Sidebar = () => {
     const pathName = usePathname();
@@ -13,26 +12,27 @@ const Sidebar = () => {
             <div className="flex items-center justify-center flex-col gap-8">
                 <Link href="/">DnD Agent</Link>
             </div>
-            {sideMenuOptions.map((menuItem) => (
-                <ul key={menuItem.name}>
-                    <li>
-                        <Link
-                            className={clsx(
-                                "group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] coursor-pointer",
-                                {
-                                    "dark:bg-[#2F006B] bg-[#EEE0FF]":
-                                        pathName == menuItem.href,
-                                },
-                            )}
-                            href={menuItem.href}
-                        >
-                            <menuItem.Component
-                                selected={pathName === menuItem.href}
-                            />
-                        </Link>
-                    </li>
-                </ul>
-            ))}
+            {sideMenuOptions.map((menuItem) => {
+                const isActivate = pathName.includes(menuItem.href);
+                return (
+                    <ul key={menuItem.name}>
+                        <li>
+                            <Link
+                                className={clsx(
+                                    "group h-8 w-8 flex items-center justify-center scale-[1.5] rounded-lg p-[3px] coursor-pointer",
+                                    {
+                                        "dark:bg-[#2F006B] bg-[#EEE0FF]":
+                                            isActivate,
+                                    },
+                                )}
+                                href={menuItem.href}
+                            >
+                                <menuItem.Component selected={isActivate} />
+                            </Link>
+                        </li>
+                    </ul>
+                );
+            })}
         </nav>
     );
 };

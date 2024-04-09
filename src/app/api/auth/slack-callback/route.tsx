@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export async function GET(req: NextRequest) {
     // Extract the code parameter from the query string
@@ -29,7 +30,6 @@ export async function GET(req: NextRequest) {
         if (!data.ok) {
             throw new Error(data.error || "Slack OAuth failed");
         }
-        console.log("---slack oauth res:", data);
         if (!!data?.ok) {
             const appId = data?.app_id;
             const userId = data?.authed_user?.id;
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
             // Handle the successful OAuth flow and redirect the user
             return NextResponse.redirect(
-                `https://localhost:3030/connections?app_id=${appId}&authed_user_id=${userId}&authed_user_token=${userToken}&slack_access_token=${accessToken}&bot_user_id=${botUserId}&team_id=${teamId}&team_name=${teamName}`,
+                `https://localhost:3030/connections?node=slack&app_id=${appId}&authed_user_id=${userId}&authed_user_token=${userToken}&slack_access_token=${accessToken}&bot_user_id=${botUserId}&team_id=${teamId}&team_name=${teamName}`,
             );
         }
     } catch (error) {
