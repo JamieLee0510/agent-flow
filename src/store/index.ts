@@ -24,3 +24,19 @@ export const useSlackStore = create<SlackStore>()((set) => ({
     setSelectedSlackChannels: (selectedSlackChannels: Option[]) =>
         set({ selectedSlackChannels }),
 }));
+
+type ConnectionStore = {
+    slackAccessToken: string;
+    setSlackAccessToken: (slackAccessToken: string) => void;
+    openaiKey: string;
+    setOpenaiKey: (openaiKey: string) => void;
+};
+
+// TODO: if DB, should save in DB
+export const useConnectionStore = create<ConnectionStore>()((set) => ({
+    slackAccessToken: "",
+    setSlackAccessToken: (slackAccessToken: string) =>
+        set({ slackAccessToken }),
+    openaiKey: "",
+    setOpenaiKey: (openaiKey: string) => set({ openaiKey }),
+}));

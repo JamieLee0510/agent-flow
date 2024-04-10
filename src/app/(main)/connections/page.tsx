@@ -1,5 +1,5 @@
 import { CONNECTIONS } from "@/lib/const";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ConnectionCard from "./_components/connection-card";
 
 type Props = {
@@ -7,7 +7,15 @@ type Props = {
 };
 
 const Connections = (props: Props) => {
-    // TODO: 透過路由params來獲取slack token
+    useEffect(() => {
+        if (props.searchParams?.slack_access_token) {
+            window.sessionStorage.setItem(
+                "slack",
+                props.searchParams?.slack_access_token,
+            );
+        }
+    }, [props]);
+
     return (
         <div className="relative flex flex-col gap-4">
             <h1 className="sticky top-0 z-[10]  border-b bg-background/50 p-6 text-4xl backdrop-blur-lg">

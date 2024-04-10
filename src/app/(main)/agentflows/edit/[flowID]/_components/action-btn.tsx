@@ -12,8 +12,7 @@ export default function ActionButton({
     content: string;
 }) {
     const onStoreSlackContent = async () => {
-        const token =
-            "xoxb-6913220856837-6907375328775-dC2rIjyvIpFkv8ZzjY5sO6Fb";
+        const token = process.env.NEXT_PUBLIC_SLACK_DEMO_TOKEN as string;
         const response = await postMessageToSlack(token, channels, content);
         if (response.message == "Success") {
             toast.success("Message sent successfully");

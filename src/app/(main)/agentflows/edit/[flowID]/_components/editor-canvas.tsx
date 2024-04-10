@@ -43,10 +43,10 @@ const nodeTypes = {
 export default function EditorCanvas() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const { setAgentNodes } = useAgentNodeStore();
+    const { setFlowNodes } = useAgentNodeStore();
 
     useEffect(() => {
-        setAgentNodes(nodes);
+        setFlowNodes(nodes);
     }, [nodes]);
 
     const [reactFlowInstance, setReactFlowInstance] =
