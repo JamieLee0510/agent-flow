@@ -14,21 +14,14 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import MultipleSelector from "@/components/ui/multiple-selector";
-import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
-import {
-    CONNECTIONS,
-    AgentDefaultCards,
-    CurrentDisableAgent,
-} from "@/lib/const";
+
+import { AgentDefaultCards, CurrentDisableAgent } from "@/lib/const";
 import { useEffect, useState } from "react";
-import { useSlackStore } from "@/store";
-import { fetchBotSlackChannels, onDragStart } from "@/lib/editor-utils";
-import ActionButton from "./action-btn";
+
+import { onDragStart } from "@/lib/editor-utils";
 import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
-import { useAgentNodeStore } from "../_store/agent-node-store";
+import { useCurrFlowNodes, useFlowNodeStore } from "../_store/agent-node-store";
 import SettingNodes from "./setting-nodes";
 
 type Props = {
@@ -36,19 +29,7 @@ type Props = {
 };
 
 export default function EditorCanvasSidebar({ nodes }: Props) {
-    const { flowNodes, setFlowNodes, currFlowNodeId } = useAgentNodeStore();
-    const [currentNode, setCurrentNode] = useState<any>(null); // TODO: agentNodeType
-
-    useEffect(() => {
-        const node = flowNodes.filter((item) => item.id == currFlowNodeId)[0];
-
-        if (!node) {
-            setCurrentNode(null);
-        } else {
-            // TODO: should take the previous agent output
-            setCurrentNode(node);
-        }
-    }, [flowNodes, currFlowNodeId]);
+    const { currentNode } = useCurrFlowNodes();
 
     return (
         <aside>

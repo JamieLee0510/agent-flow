@@ -19,12 +19,11 @@ type Props = {
     title: string;
     description: string;
     callback?: () => void;
-    isConnected: boolean;
 };
 import { useSearchParams } from "next/navigation";
 import { AgentType } from "@/lib/types";
 
-const ConnectionCard = ({ icon, title, description, isConnected }: Props) => {
+const ConnectionCard = ({ icon, title, description }: Props) => {
     return (
         <Card className="flex w-full items-center justify-between">
             <CardHeader>
