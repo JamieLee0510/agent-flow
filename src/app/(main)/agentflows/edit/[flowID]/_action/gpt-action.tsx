@@ -5,16 +5,17 @@ import { generateAnswer } from "@/app/_services/gpt";
 export const postMessageToGpt = async (
     systemPrompt: string,
     userPrompt: string,
-): Promise<{ message: string }> => {
-    if (!userPrompt) return { message: "Content is empty" };
+): Promise<string> => {
+    if (!userPrompt) return "user prompt is empty";
 
     try {
         const result = (await generateAnswer({
             systemPrompt,
             userPrompt,
         })) as string;
-        return { message: result };
+        return result;
     } catch (error) {
-        return { message: "Something wrong with GPT" };
+        console.log(error);
+        return "Something wrong with GPT";
     }
 };

@@ -29,7 +29,7 @@ export const postMessageInSlackChannel = async (
     content: string,
 ) => {
     const url = "https://slack.com/api/chat.postMessage";
-    const data = { chanel: slackChannelID, text: content };
+    const data = { channel: slackChannelID, text: content };
     const headers = {
         Authorization: `Bearer ${slackAccessToken}`,
         "Content-Type": "application/json;charset=utf-8",

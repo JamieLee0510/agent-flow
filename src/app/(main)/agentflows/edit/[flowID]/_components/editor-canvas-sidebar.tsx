@@ -14,41 +14,62 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import MultipleSelector from "@/components/ui/multiple-selector";
-import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
-import {
-    CONNECTIONS,
-    AgentDefaultCards,
-    CurrentDisableAgent,
-} from "@/lib/const";
+
+import { AgentDefaultCards, CurrentDisableAgent } from "@/lib/const";
 import { useEffect, useState } from "react";
-import { useSlackStore } from "@/store";
-import { fetchBotSlackChannels, onDragStart } from "@/lib/editor-utils";
-import ActionButton from "./action-btn";
+
+import { onDragStart } from "@/lib/editor-utils";
 import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
-import { useAgentNodeStore } from "../_store/agent-node-store";
+import { useCurrFlowNodes, useFlowNodeStore } from "../_store/agent-node-store";
 import SettingNodes from "./setting-nodes";
+import { Button } from "@/components/ui/button";
+import { TriggerAgentNode } from "@/lib/agents/trigger-agent";
+import { GptAgentNode } from "@/lib/agents/gpt-agent";
+import { SlackAgentNode } from "@/lib/agents/slack-agent";
 
 type Props = {
     nodes: any[];
 };
 
 export default function EditorCanvasSidebar({ nodes }: Props) {
-    const { flowNodes, setFlowNodes, currFlowNodeId } = useAgentNodeStore();
-    const [currentNode, setCurrentNode] = useState<any>(null); // TODO: agentNodeType
-
-    useEffect(() => {
-        const node = flowNodes.filter((item) => item.id == currFlowNodeId)[0];
-
-        if (!node) {
-            setCurrentNode(null);
-        } else {
-            // TODO: should take the previous agent output
-            setCurrentNode(node);
+    const { flowNodes, currentNode } = useCurrFlowNodes();
+    const testAgent = () => {
+        const agentList: any[] = [];
+        flowNodes.forEach((flowNode) => {
+            switch (flowNode.type) {
+                case AgentType.Trigger:
+                    const triggerAgent = new TriggerAgentNode(
+                        flowNode.data.metadata.triggerText,
+                    );
+                    agentList.push(triggerAgent);
+                    break;
+                case AgentType.GPT:
+                    const gptAgent = new GptAgentNode(
+                        flowNode.data.metadata.systemPrompt,
+                    );
+                    agentList.push(gptAgent);
+                    break;
+                case AgentType.Slack:
+                    const { selectedSlackChannels, slackToken } =
+                        flowNode.data.metadata;
+                    const slackAgent = new SlackAgentNode(
+                        selectedSlackChannels,
+                        slackToken,
+                    );
+                    agentList.push(slackAgent);
+                    break;
+            }
+        });
+        for (let i = 0; i < agentList.length - 1; i++) {
+            const currAgent = agentList[i];
+            const nextAgent = agentList[i + 1];
+            currAgent.setNext(nextAgent);
         }
-    }, [flowNodes, currFlowNodeId]);
+        agentList[0].execute("").then((result: any) => {
+            console.log(result); // 输出最终结果
+        });
+    };
 
     return (
         <aside>
@@ -112,6 +133,12 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                     )}
                 </TabsContent>
             </Tabs>
+            <Button
+                onClick={testAgent}
+                className="absolute top-0 right-2 rounded-2xl"
+            >
+                test agent
+            </Button>
         </aside>
     );
 }

@@ -8,12 +8,12 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useAgentNodeStore } from "../_store/agent-node-store";
+import { useFlowNodeStore } from "../_store/agent-node-store";
 
 // TODO: data type
 export default function EditorCanvasItem({ data }: any) {
     const nodeId = useNodeId();
-    const { setCurFlowNodeId } = useAgentNodeStore();
+    const { setCurFlowNodeId } = useFlowNodeStore();
     const logo = useMemo(() => {
         return <EditorAgentIcon type={data.type} />;
     }, [data]);

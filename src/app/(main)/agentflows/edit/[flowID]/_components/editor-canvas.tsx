@@ -28,7 +28,7 @@ import {
 import { AgentType, EditorNodeType } from "@/lib/types";
 import EditorCanvasItem from "./editot-canvas-item";
 import { AgentDefaultCards } from "@/lib/const";
-import { useAgentNodeStore } from "../_store/agent-node-store";
+import { useFlowNodeStore } from "../_store/agent-node-store";
 
 const initialNodes: EditorNodeType[] = [];
 
@@ -43,7 +43,7 @@ const nodeTypes = {
 export default function EditorCanvas() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const { setFlowNodes } = useAgentNodeStore();
+    const { setFlowNodes } = useFlowNodeStore();
 
     useEffect(() => {
         setFlowNodes(nodes);
@@ -84,6 +84,7 @@ export default function EditorCanvas() {
                     title: type,
                     description:
                         AgentDefaultCards[type as AgentType].description,
+                    image: AgentDefaultCards[type as AgentType].image,
                     completed: false,
                     current: false,
                     metadata: {},

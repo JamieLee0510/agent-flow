@@ -22,7 +22,6 @@ const Connections = (props: Props) => {
                             title={connection.title}
                             icon={connection.image}
                             description={connection.description}
-                            isConnected={false}
                         />
                     ))}
                 </section>
