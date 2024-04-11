@@ -1,5 +1,5 @@
 export enum AgentType {
-    LLM = "LLM",
+    GPT = "GPT",
     Slack = "Slack",
     Trigger = "Trigger",
     Email = "Email",

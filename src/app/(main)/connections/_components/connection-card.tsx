@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Card,
     CardContent,
@@ -8,6 +10,8 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import SlackConnectionBtn from "./slack-connection-btn";
+import GptConnectionBtn from "./gpt-connection-btn";
 
 type Props = {
     // type: string;
@@ -17,6 +21,8 @@ type Props = {
     callback?: () => void;
     isConnected: boolean;
 };
+import { useSearchParams } from "next/navigation";
+import { AgentType } from "@/lib/types";
 
 const ConnectionCard = ({ icon, title, description, isConnected }: Props) => {
     return (
@@ -36,7 +42,9 @@ const ConnectionCard = ({ icon, title, description, isConnected }: Props) => {
                     <CardDescription>{description}</CardDescription>
                 </div>
             </CardHeader>
-            <div className="flex flex-col items-center gap-2 p-4">
+            {title == AgentType.Slack && <SlackConnectionBtn />}
+            {title == AgentType.GPT && <GptConnectionBtn />}
+            {/* <div className="flex flex-col items-center gap-2 p-4">
                 {isConnected ? (
                     <div className="border-bg-primary rounded-lg border-2 px-3 py-2 font-bold text-white">
                         Connected
@@ -49,7 +57,7 @@ const ConnectionCard = ({ icon, title, description, isConnected }: Props) => {
                         Connect
                     </Link>
                 )}
-            </div>
+            </div> */}
         </Card>
     );
 };

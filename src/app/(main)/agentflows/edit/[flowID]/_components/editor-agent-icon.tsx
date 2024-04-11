@@ -30,7 +30,7 @@ export default function EditorAgentIcon({ type }: Props) {
             return <GitBranch className="flex-shrink-0" size={30} />;
         case AgentType.Email:
             return <Mail className="flex-shrink-0" size={30} />;
-        case AgentType.LLM:
+        case AgentType.GPT:
             return <CircuitBoard className="flex-shrink-0" size={30} />;
         default:
             return <Zap className="flex-shrink-0" size={30} />;
