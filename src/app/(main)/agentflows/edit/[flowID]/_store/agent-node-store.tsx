@@ -3,7 +3,10 @@ import { create } from "zustand";
 
 type FlowNodeStore = {
     flowNodes: any[];
+
     setFlowNodes: (flowNodes: any[]) => void;
+    flowEdges: any[];
+    setFlowEdges: (flowEdges: any[]) => void;
     currFlowNodeId: string | null;
     setCurFlowNodeId: (currFlowNodeId: string | null) => void;
 };
@@ -11,12 +14,15 @@ type FlowNodeStore = {
 export const useFlowNodeStore = create<FlowNodeStore>()((set) => ({
     flowNodes: [],
     setFlowNodes: (flowNodes: any[]) => set({ flowNodes }),
+    flowEdges: [],
+    setFlowEdges: (flowEdges: any[]) => set({ flowEdges }),
     currFlowNodeId: null,
     setCurFlowNodeId: (currFlowNodeId) => set({ currFlowNodeId }),
 }));
 
 export const useCurrFlowNodes = () => {
-    const { flowNodes, setFlowNodes, currFlowNodeId } = useFlowNodeStore();
+    const { flowNodes, flowEdges, setFlowNodes, currFlowNodeId } =
+        useFlowNodeStore();
     const [currentNode, setCurrentNode] = useState<any>(null); // TODO: agentNodeType
 
     useEffect(() => {
@@ -42,6 +48,7 @@ export const useCurrFlowNodes = () => {
     return {
         currentNode,
         flowNodes,
+        flowEdges,
         setFlowNodes,
         currFlowNodeId,
         saveCurrNodeMetadata,

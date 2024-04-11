@@ -30,9 +30,7 @@ import EditorCanvasItem from "./editot-canvas-item";
 import { AgentDefaultCards } from "@/lib/const";
 import { useFlowNodeStore } from "../_store/agent-node-store";
 
-const initialNodes: EditorNodeType[] = [];
-
-const initialEdges: { id: string; source: string; target: string }[] = [];
+// TODO: might need a start node and a end node;
 
 const nodeTypes = {
     [AgentType.Trigger]: EditorCanvasItem,
@@ -41,13 +39,17 @@ const nodeTypes = {
 };
 
 export default function EditorCanvas() {
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-    const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const { setFlowNodes } = useFlowNodeStore();
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+    const { setFlowNodes, setFlowEdges } = useFlowNodeStore();
 
     useEffect(() => {
         setFlowNodes(nodes);
     }, [nodes]);
+
+    useEffect(() => {
+        setFlowEdges(edges);
+    }, [edges]);
 
     const [reactFlowInstance, setReactFlowInstance] =
         useState<ReactFlowInstance>();
@@ -57,7 +59,6 @@ export default function EditorCanvas() {
             event.preventDefault();
 
             const type = event.dataTransfer.getData("application/reactflow");
-            console.log("---onDrop type:", type);
             // check if the dropped element is valid
             if (typeof type === "undefined" || !type) {
                 return;
@@ -72,10 +73,6 @@ export default function EditorCanvas() {
                 y: event.clientY,
             });
 
-            console.log(
-                "--desc:",
-                AgentDefaultCards[type as AgentType].description,
-            );
             const newNode = {
                 id: uuidV4(),
                 type,
