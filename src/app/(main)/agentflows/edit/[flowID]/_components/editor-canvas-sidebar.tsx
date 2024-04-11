@@ -33,8 +33,11 @@ type Props = {
 };
 
 export default function EditorCanvasSidebar({ nodes }: Props) {
-    const { flowNodes, currentNode } = useCurrFlowNodes();
+    const { flowNodes, flowEdges, currentNode } = useCurrFlowNodes();
     const testAgent = () => {
+        console.log("---flowNodes:", flowNodes);
+        console.log("---flowEdges:", flowEdges);
+
         const agentList: any[] = [];
         flowNodes.forEach((flowNode) => {
             switch (flowNode.type) {
@@ -61,14 +64,31 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                     break;
             }
         });
-        for (let i = 0; i < agentList.length - 1; i++) {
-            const currAgent = agentList[i];
-            const nextAgent = agentList[i + 1];
-            currAgent.setNext(nextAgent);
+        for (let i = 0; i < flowEdges.length; i++) {
+            const currEdge = flowEdges[i];
+            const agentIdx = flowNodes.findIndex(
+                (node) => node.id == currEdge.source,
+            );
+            const nextAgentIdx = flowNodes.findIndex(
+                (node) => node.id == currEdge.target,
+            );
+            agentList[agentIdx].setNext(agentList[nextAgentIdx]);
         }
-        agentList[0].execute("").then((result: any) => {
-            console.log(result); // 输出最终结果
+        const starterAgent =
+            agentList[
+                flowNodes.findIndex((node) => node.type == AgentType.Trigger)
+            ];
+        starterAgent.execute("").then((result: any) => {
+            console.log("---excute result:", result);
         });
+        // for (let i = 0; i < agentList.length - 1; i++) {
+        //     const currAgent = agentList[i];
+        //     const nextAgent = agentList[i + 1];
+        //     currAgent.setNext(nextAgent);
+        // }
+        // agentList[0].execute("").then((result: any) => {
+        //     console.log(result); // 输出最终结果
+        // });
     };
 
     return (
