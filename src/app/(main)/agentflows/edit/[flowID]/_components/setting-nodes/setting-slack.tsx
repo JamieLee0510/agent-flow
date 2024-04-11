@@ -28,18 +28,32 @@ export default function SettingSlack() {
         setSelectedSlackChannels,
     } = useSlackStore();
     const [slackMsg, setSlackMsg] = useState("");
+    const [isConnected, setIsConnected] = useState(false);
 
     // init slack channel options
     useEffect(() => {
-        const token = process.env.NEXT_PUBLIC_SLACK_DEMO_TOKEN as string;
-        getChannelList(token)?.then((channels) => setSlackChannels(channels));
+        const token = window.sessionStorage.getItem("slack_access_token");
+        if (token) {
+            getChannelList(token)?.then((channels) => {
+                setIsConnected(true);
+                setSlackChannels(channels);
+            });
+        } else {
+            setIsConnected(false);
+        }
     }, []);
 
     const onStoreSlackContent = async () => {
-        const token = process.env.NEXT_PUBLIC_SLACK_DEMO_TOKEN as string;
+        const token = window.sessionStorage.getItem(
+            "slack_access_token",
+        ) as string;
+        const selectedSlackChannelValue = selectedSlackChannels
+            .map((channel) => channel?.value)
+            .filter((channel) => channel !== undefined);
+        console.log("---selectedSlackChannelValue:", selectedSlackChannelValue);
         const response = await postMessageToSlack(
             token,
-            selectedSlackChannels,
+            selectedSlackChannelValue,
             slackMsg,
         );
         if (response.message == "Success") {
@@ -50,7 +64,14 @@ export default function SettingSlack() {
     };
 
     const saveSlackTemplate = () => {
-        saveCurrNodeMetadata({ selectedSlackChannels });
+        const slackToken = window.sessionStorage.getItem("slack_access_token");
+        const selectedSlackChannelValue = selectedSlackChannels
+            .map((channel) => channel?.value)
+            .filter((channel) => channel !== undefined);
+        saveCurrNodeMetadata({
+            selectedSlackChannels: selectedSlackChannelValue,
+            slackToken,
+        });
         toast.success("save slack template successfully");
     };
 
@@ -113,31 +134,33 @@ export default function SettingSlack() {
                     <AccordionTrigger className="!no-underline">
                         Action
                     </AccordionTrigger>
-                    <Card>
-                        <div className="flex flex-col gap-3 px-6 py-3 pb-20">
-                            <p>Message</p>
-                            <Input
-                                type="text"
-                                value={slackMsg}
-                                onChange={(event) =>
-                                    setSlackMsg(event.target.value)
-                                }
-                            />
+                    <AccordionContent>
+                        <Card>
+                            <div className="flex flex-col gap-3 px-6 py-3 pb-20">
+                                <p>Message</p>
+                                <Input
+                                    type="text"
+                                    value={slackMsg}
+                                    onChange={(event) =>
+                                        setSlackMsg(event.target.value)
+                                    }
+                                />
 
-                            <Button
-                                variant="outline"
-                                onClick={onStoreSlackContent}
-                            >
-                                Send Message
-                            </Button>
-                            <Button
-                                onClick={saveSlackTemplate}
-                                variant="outline"
-                            >
-                                Save Template
-                            </Button>
-                        </div>
-                    </Card>
+                                <Button
+                                    variant="outline"
+                                    onClick={onStoreSlackContent}
+                                >
+                                    Send Message
+                                </Button>
+                                <Button
+                                    onClick={saveSlackTemplate}
+                                    variant="outline"
+                                >
+                                    Save Template
+                                </Button>
+                            </div>
+                        </Card>
+                    </AccordionContent>
                 </AccordionItem>
             </Accordion>
         </>

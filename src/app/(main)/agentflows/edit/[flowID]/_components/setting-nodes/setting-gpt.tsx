@@ -8,7 +8,6 @@ import {
 import { Card } from "@/components/ui/card";
 import React, { useEffect, useState } from "react";
 import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
-import { CONNECTIONS } from "@/lib/const";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +18,7 @@ import { useCurrFlowNodes } from "../../_store/agent-node-store";
 
 export default function SettingGPT() {
     const { currentNode, saveCurrNodeMetadata } = useCurrFlowNodes();
-    const [instructPrompt, setInstructPrompt] = useState(
+    const [systemPrompt, setSystemPrompt] = useState(
         "You are a helpful assistant.",
     );
     const [testMsg, setTestMsg] = useState("");
@@ -32,21 +31,19 @@ export default function SettingGPT() {
             currentNode.data.metadata &&
             currentNode.data.metadata.instructPrompt
         ) {
-            setInstructPrompt(
-                currentNode.data.metadata.instructPrompt as string,
-            );
+            setSystemPrompt(currentNode.data.metadata.instructPrompt as string);
         }
     }, [currentNode]);
 
     const saveGptTemplate = () => {
-        saveCurrNodeMetadata({ instructPrompt });
+        saveCurrNodeMetadata({ systemPrompt });
         toast.success("save gpt template successfully");
     };
 
     const testGPTHandler = async () => {
         setTestGptAnswer("");
         setIsLoading(true);
-        const { message } = await postMessageToGpt(instructPrompt, testMsg);
+        const message = await postMessageToGpt(systemPrompt, testMsg);
         if (message == "Something wrong with GPT") {
             toast.error(message);
         } else {
@@ -86,43 +83,48 @@ export default function SettingGPT() {
                     <AccordionTrigger className="!no-underline">
                         Action
                     </AccordionTrigger>
-                    <Card>
-                        <div className="flex flex-col gap-3 px-6 py-3 pb-20">
-                            <p>Instructure Prompt</p>
-                            <Input
-                                type="text"
-                                value={instructPrompt}
-                                onChange={(event) =>
-                                    setInstructPrompt(event.target.value)
-                                }
-                            />
-                            <Button onClick={saveGptTemplate} variant="outline">
-                                Save Template
-                            </Button>
-                            <p>Test Message</p>
-                            <Input
-                                type="text"
-                                value={testMsg}
-                                onChange={(event) =>
-                                    setTestMsg(event.target.value)
-                                }
-                            />
+                    <AccordionContent>
+                        <Card>
+                            <div className="flex flex-col gap-3 px-6 py-3 pb-20">
+                                <p>Instructure Prompt</p>
+                                <Input
+                                    type="text"
+                                    value={systemPrompt}
+                                    onChange={(event) =>
+                                        setSystemPrompt(event.target.value)
+                                    }
+                                />
+                                <Button
+                                    onClick={saveGptTemplate}
+                                    variant="outline"
+                                >
+                                    Save Template
+                                </Button>
+                                <p>Test Message</p>
+                                <Input
+                                    type="text"
+                                    value={testMsg}
+                                    onChange={(event) =>
+                                        setTestMsg(event.target.value)
+                                    }
+                                />
 
-                            <Button
-                                variant="outline"
-                                onClick={testGPTHandler}
-                                disabled={isLoading}
-                            >
-                                Test GPT {isLoading && <LoadingSpinner />}
-                            </Button>
-                            {testGptAnswer && (
-                                <>
-                                    <p>Test Answer</p>
-                                    <Textarea value={testGptAnswer} />
-                                </>
-                            )}
-                        </div>
-                    </Card>
+                                <Button
+                                    variant="outline"
+                                    onClick={testGPTHandler}
+                                    disabled={isLoading}
+                                >
+                                    Test GPT {isLoading && <LoadingSpinner />}
+                                </Button>
+                                {testGptAnswer && (
+                                    <>
+                                        <p>Test Answer</p>
+                                        <Textarea value={testGptAnswer} />
+                                    </>
+                                )}
+                            </div>
+                        </Card>
+                    </AccordionContent>
                 </AccordionItem>
             </Accordion>
         </>

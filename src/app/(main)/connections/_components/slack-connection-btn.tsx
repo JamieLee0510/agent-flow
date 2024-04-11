@@ -12,14 +12,13 @@ export default function SlackConnectionCard() {
     // 目前的connection card，
     const slackAccessToken = searchParams.get("slack_access_token");
     useEffect(() => {
-        if (
-            slackAccessToken ||
-            window.sessionStorage.getItem("slackAccessToken")
-        ) {
+        if (slackAccessToken) {
             window.sessionStorage.setItem(
-                "slackAccessToken",
+                "slack_access_token",
                 slackAccessToken as string,
             );
+            setIsConnected(true);
+        } else if (window.sessionStorage.getItem("slack_access_token")) {
             setIsConnected(true);
         }
     }, [slackAccessToken]);

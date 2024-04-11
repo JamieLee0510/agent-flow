@@ -47,3 +47,5 @@ export const useCurrFlowNodes = () => {
         saveCurrNodeMetadata,
     };
 };
+
+export const demoAgentFlows = () => {};

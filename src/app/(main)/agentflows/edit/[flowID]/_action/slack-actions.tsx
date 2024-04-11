@@ -4,7 +4,7 @@ import { Option } from "@/components/ui/multiple-selector";
 
 export const postMessageToSlack = async (
     slackAccessToken: string,
-    selectedSlackChannels: Option[],
+    selectedSlackChannels: string[],
     content: string,
 ): Promise<{ message: string }> => {
     if (!content) return { message: "Content is empty" };
@@ -13,16 +13,14 @@ export const postMessageToSlack = async (
 
     try {
         await Promise.all(
-            selectedSlackChannels
-                .map((channel) => channel?.value)
-                .filter((channel) => channel !== undefined) // 確保過濾掉任何未定義的頻道值
-                .map((channel) =>
-                    postMessageInSlackChannel(
-                        slackAccessToken,
-                        channel,
-                        content,
-                    ),
-                ),
+            selectedSlackChannels.map((channel) => {
+                console.log("---channel");
+                return postMessageInSlackChannel(
+                    slackAccessToken,
+                    channel,
+                    content,
+                );
+            }),
         );
     } catch (error) {
         return { message: "Message could not be sent to Slack" };

@@ -23,13 +23,53 @@ import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
 import { useCurrFlowNodes, useFlowNodeStore } from "../_store/agent-node-store";
 import SettingNodes from "./setting-nodes";
+import { Button } from "@/components/ui/button";
+import { TriggerAgentNode } from "@/lib/agents/trigger-agent";
+import { GptAgentNode } from "@/lib/agents/gpt-agent";
+import { SlackAgentNode } from "@/lib/agents/slack-agent";
 
 type Props = {
     nodes: any[];
 };
 
 export default function EditorCanvasSidebar({ nodes }: Props) {
-    const { currentNode } = useCurrFlowNodes();
+    const { flowNodes, currentNode } = useCurrFlowNodes();
+    const testAgent = () => {
+        const agentList: any[] = [];
+        flowNodes.forEach((flowNode) => {
+            switch (flowNode.type) {
+                case AgentType.Trigger:
+                    const triggerAgent = new TriggerAgentNode(
+                        flowNode.data.metadata.triggerText,
+                    );
+                    agentList.push(triggerAgent);
+                    break;
+                case AgentType.GPT:
+                    const gptAgent = new GptAgentNode(
+                        flowNode.data.metadata.systemPrompt,
+                    );
+                    agentList.push(gptAgent);
+                    break;
+                case AgentType.Slack:
+                    const { selectedSlackChannels, slackToken } =
+                        flowNode.data.metadata;
+                    const slackAgent = new SlackAgentNode(
+                        selectedSlackChannels,
+                        slackToken,
+                    );
+                    agentList.push(slackAgent);
+                    break;
+            }
+        });
+        for (let i = 0; i < agentList.length - 1; i++) {
+            const currAgent = agentList[i];
+            const nextAgent = agentList[i + 1];
+            currAgent.setNext(nextAgent);
+        }
+        agentList[0].execute("").then((result: any) => {
+            console.log(result); // 输出最终结果
+        });
+    };
 
     return (
         <aside>
@@ -93,6 +133,12 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
                     )}
                 </TabsContent>
             </Tabs>
+            <Button
+                onClick={testAgent}
+                className="absolute top-0 right-2 rounded-2xl"
+            >
+                test agent
+            </Button>
         </aside>
     );
 }
