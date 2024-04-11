@@ -17,12 +17,18 @@ export const CONNECTIONS = [
         accessTokenKey: "slackAccessToken",
         slackSpecial: true,
     },
+    {
+        title: "GPT",
+        description: "Use GPT to get llm response.",
+        image: "/chatgpt.png",
+        gptToken: "...",
+    },
 ];
 
 export const CurrentDisableAgent = [AgentType.Email, AgentType.Condition];
 
 export const AgentDefaultCards: { [key in AgentType]: any } = {
-    [AgentType.LLM]: {
+    [AgentType.GPT]: {
         description:
             "Use the power of AI to summarize, respond, create and much more.",
         type: "Action",

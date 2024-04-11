@@ -37,16 +37,16 @@ const initialEdges: { id: string; source: string; target: string }[] = [];
 const nodeTypes = {
     [AgentType.Trigger]: EditorCanvasItem,
     [AgentType.Slack]: EditorCanvasItem,
-    [AgentType.LLM]: EditorCanvasItem,
+    [AgentType.GPT]: EditorCanvasItem,
 };
 
 export default function EditorCanvas() {
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const { setAgentNodes } = useAgentNodeStore();
+    const { setFlowNodes } = useAgentNodeStore();
 
     useEffect(() => {
-        setAgentNodes(nodes);
+        setFlowNodes(nodes);
     }, [nodes]);
 
     const [reactFlowInstance, setReactFlowInstance] =
