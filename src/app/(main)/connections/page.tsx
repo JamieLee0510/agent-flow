@@ -1,11 +1,11 @@
 import { CONNECTIONS } from "@/lib/const";
 import ConnectionCard from "./_components/connection-card";
 
-type Props = {
-    searchParams?: { [key: string]: string | undefined };
-};
+// type Props = {
+//     searchParams?: { [key: string]: string | undefined };
+// };
 
-const Connections = (props: Props) => {
+const Connections = () => {
     return (
         <div className="relative flex flex-col gap-4">
             <h1 className="sticky top-0 z-[10]  border-b bg-background/50 p-6 text-4xl backdrop-blur-lg">
