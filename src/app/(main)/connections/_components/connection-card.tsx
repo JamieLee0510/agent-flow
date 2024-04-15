@@ -8,6 +8,8 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Suspense } from "react";
+
 import Image from "next/image";
 import Link from "next/link";
 import SlackConnectionBtn from "./slack-connection-btn";
@@ -41,22 +43,12 @@ const ConnectionCard = ({ icon, title, description }: Props) => {
                     <CardDescription>{description}</CardDescription>
                 </div>
             </CardHeader>
-            {title == AgentType.Slack && <SlackConnectionBtn />}
+            {title == AgentType.Slack && (
+                <Suspense fallback={<div>Loading...</div>}>
+                    <SlackConnectionBtn />
+                </Suspense>
+            )}
             {title == AgentType.GPT && <GptConnectionBtn />}
-            {/* <div className="flex flex-col items-center gap-2 p-4">
-                {isConnected ? (
-                    <div className="border-bg-primary rounded-lg border-2 px-3 py-2 font-bold text-white">
-                        Connected
-                    </div>
-                ) : (
-                    <Link
-                        className="bg-primary rounded-lg p-2 font-bold text-primary-foreground"
-                        href={process.env.NEXT_PUBLIC_SLACK_REDIRECT!}
-                    >
-                        Connect
-                    </Link>
-                )}
-            </div> */}
         </Card>
     );
 };
