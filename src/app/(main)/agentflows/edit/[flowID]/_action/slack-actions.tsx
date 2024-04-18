@@ -14,7 +14,6 @@ export const postMessageToSlack = async (
     try {
         await Promise.all(
             selectedSlackChannels.map((channel) => {
-                console.log("---channel");
                 return postMessageInSlackChannel(
                     slackAccessToken,
                     channel,
