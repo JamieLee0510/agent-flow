@@ -2,10 +2,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
-
+    const { pathname, searchParams } = request.nextUrl;
     // if access to root path, redirect to `/agentflows`
-    if (pathname === "/") {
+    if (pathname === "/" && Object.keys(searchParams).length === 0) {
         return NextResponse.redirect(new URL("/agentflows", request.url));
     }
 
