@@ -8,26 +8,37 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
-import { useSlackStore } from "@/store";
-import React, { useEffect, useState } from "react";
+import { useSlackStore, Option } from "@/store";
+import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import MultipleSelector from "@/components/ui/multiple-selector";
 import { Button } from "@/components/ui/button";
 import { postMessageToSlack } from "../../_action/slack-actions";
 import { toast } from "sonner";
 import { getChannelList } from "@/app/_services/slack";
-import { useCurrFlowNodes } from "../../_store/agent-node-store";
+import { FlowNodeStore, useFlowNodeStore } from "../../_store/agent-node-store";
+import { useShallow } from "zustand/react/shallow";
+
+const selector = (state: FlowNodeStore) => ({
+    flowNodes: state.flowNodes,
+    setFlowNodes: state.setFlowNodes,
+    currFlowNodeId: state.currFlowNodeId,
+});
 
 export default function SettingSlack() {
-    const { currentNode, saveCurrNodeMetadata } = useCurrFlowNodes();
+    const { flowNodes, setFlowNodes, currFlowNodeId } = useFlowNodeStore(
+        useShallow(selector),
+    );
 
-    const {
-        slackChannels,
-        setSlackChannels,
-        selectedSlackChannels,
-        setSelectedSlackChannels,
-    } = useSlackStore();
+    const currentNode = useMemo(
+        () => flowNodes.filter((node) => node.id === currFlowNodeId)[0],
+        [currFlowNodeId, flowNodes],
+    );
+    const { slackChannels, setSlackChannels } = useSlackStore();
     const [slackMsg, setSlackMsg] = useState("");
+    const [selectedSlackChannels, setSelectedSlackChannels] = useState<
+        Option[]
+    >([]);
     const [isConnected, setIsConnected] = useState(false);
 
     // init slack channel options
@@ -50,7 +61,6 @@ export default function SettingSlack() {
         const selectedSlackChannelValue = selectedSlackChannels
             .map((channel) => channel?.value)
             .filter((channel) => channel !== undefined);
-        console.log("---selectedSlackChannelValue:", selectedSlackChannelValue);
         const response = await postMessageToSlack(
             token,
             selectedSlackChannelValue,
@@ -68,10 +78,21 @@ export default function SettingSlack() {
         const selectedSlackChannelValue = selectedSlackChannels
             .map((channel) => channel?.value)
             .filter((channel) => channel !== undefined);
-        saveCurrNodeMetadata({
-            selectedSlackChannels: selectedSlackChannelValue,
-            slackToken,
-        });
+        const newNodeData = {
+            ...currentNode,
+            data: {
+                ...currentNode.data,
+                metadata: {
+                    selectedSlackChannels: selectedSlackChannelValue,
+                    slackToken,
+                },
+            },
+        };
+        const newFlowNodes = flowNodes.map((node) =>
+            node.id === newNodeData.id ? { ...node, ...newNodeData } : node,
+        );
+        setFlowNodes(newFlowNodes);
+
         toast.success("save slack template successfully");
     };
 

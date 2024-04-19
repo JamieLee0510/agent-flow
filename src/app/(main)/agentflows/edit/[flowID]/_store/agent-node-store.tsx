@@ -1,58 +1,57 @@
 import { useEffect, useState } from "react";
 import { create } from "zustand";
+import {
+    Connection,
+    Edge,
+    EdgeChange,
+    Node,
+    NodeChange,
+    addEdge,
+    OnNodesChange,
+    OnEdgesChange,
+    OnConnect,
+    applyNodeChanges,
+    applyEdgeChanges,
+} from "reactflow";
 
-type FlowNodeStore = {
-    flowNodes: any[];
+export type FlowNodeStore = {
+    flowNodes: Node[];
+    flowEdges: Edge[];
+    onNodesChange: OnNodesChange;
+    onEdgesChange: OnEdgesChange;
+    onConnect: OnConnect;
+    setFlowNodes: (flowNodes: Node[]) => void;
+    setFlowEdges: (flowEdges: Edge[]) => void;
 
-    setFlowNodes: (flowNodes: any[]) => void;
-    flowEdges: any[];
-    setFlowEdges: (flowEdges: any[]) => void;
     currFlowNodeId: string | null;
     setCurFlowNodeId: (currFlowNodeId: string | null) => void;
 };
 
-export const useFlowNodeStore = create<FlowNodeStore>()((set) => ({
+export const useFlowNodeStore = create<FlowNodeStore>((set, get) => ({
     flowNodes: [],
-    setFlowNodes: (flowNodes: any[]) => set({ flowNodes }),
     flowEdges: [],
-    setFlowEdges: (flowEdges: any[]) => set({ flowEdges }),
+    onNodesChange: (changes: NodeChange[]) => {
+        set({
+            flowNodes: applyNodeChanges(changes, get().flowNodes),
+        });
+    },
+    onEdgesChange: (changes: EdgeChange[]) => {
+        set({
+            flowEdges: applyEdgeChanges(changes, get().flowEdges),
+        });
+    },
+    onConnect: (connection: Connection) => {
+        set({
+            flowEdges: addEdge(connection, get().flowEdges),
+        });
+    },
+    setFlowNodes: (flowNodes: Node[]) => {
+        set({ flowNodes });
+    },
+    setFlowEdges: (flowEdges: Edge[]) => {
+        set({ flowEdges });
+    },
+
     currFlowNodeId: null,
     setCurFlowNodeId: (currFlowNodeId) => set({ currFlowNodeId }),
 }));
-
-export const useCurrFlowNodes = () => {
-    const { flowNodes, flowEdges, setFlowNodes, currFlowNodeId } =
-        useFlowNodeStore();
-    const [currentNode, setCurrentNode] = useState<any>(null); // TODO: agentNodeType
-
-    useEffect(() => {
-        const node = flowNodes.filter((item) => item.id == currFlowNodeId)[0];
-
-        if (!node) {
-            setCurrentNode(null);
-        } else {
-            // TODO: should take the previous agent output
-            setCurrentNode(node);
-        }
-    }, [flowNodes, currFlowNodeId]);
-
-    const saveCurrNodeMetadata = (metadata: any) => {
-        flowNodes.forEach((node) => {
-            if (node.id == currFlowNodeId) {
-                node.data.metadata = metadata;
-            }
-        });
-        setFlowNodes([...flowNodes]);
-    };
-
-    return {
-        currentNode,
-        flowNodes,
-        flowEdges,
-        setFlowNodes,
-        currFlowNodeId,
-        saveCurrNodeMetadata,
-    };
-};
-
-export const demoAgentFlows = () => {};
