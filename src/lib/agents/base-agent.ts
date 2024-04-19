@@ -20,8 +20,6 @@ export class AgentNode<T, R> {
     }
 
     async execute(input: T): Promise<R> {
-        console.log("---while execute, agent type:", this.agentType);
-        console.log("---while execute, get data:", input);
         if (!this.func) {
             throw new Error("Agent function is not defined.");
         }

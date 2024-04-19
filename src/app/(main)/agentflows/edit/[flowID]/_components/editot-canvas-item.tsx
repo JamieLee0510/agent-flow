@@ -8,17 +8,35 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { useFlowNodeStore } from "../_store/agent-node-store";
+import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
+import { useShallow } from "zustand/react/shallow";
+import {
+    TabValue,
+    usePanelControllStore,
+} from "../_store/pannel-controll-store";
+
+const selector = (state: FlowNodeStore) => ({
+    currFlowNodeId: state.currFlowNodeId,
+    setCurFlowNodeId: state.setCurFlowNodeId,
+});
 
 // TODO: data type
 export default function EditorCanvasItem({ data }: any) {
     const nodeId = useNodeId();
-    const setCurFlowNodeId = useFlowNodeStore(
-        (state) => state.setCurFlowNodeId,
+    const { currFlowNodeId, setCurFlowNodeId } = useFlowNodeStore(
+        useShallow(selector),
     );
+    const { setTabValue } = usePanelControllStore((state) => ({
+        setTabValue: state.setTabValue,
+    }));
     const logo = useMemo(() => {
         return <EditorAgentIcon type={data.type} />;
     }, [data]);
+
+    const isSelected = useMemo(
+        () => currFlowNodeId == nodeId,
+        [currFlowNodeId, nodeId],
+    );
 
     return (
         <>
@@ -31,9 +49,10 @@ export default function EditorCanvasItem({ data }: any) {
             )}
             <Card
                 onClick={() => {
+                    setTabValue(TabValue.Settings);
                     setCurFlowNodeId(nodeId);
                 }}
-                className="relative max-w-[400px] dard:border-muted-foreground/70"
+                className={`relative max-w-[400px] dark:border-muted-foreground/70  ${isSelected ? "border-4" : ""}`}
             >
                 <CardHeader className="flex flex-row items-center gap-4">
                     <div>{logo}</div>

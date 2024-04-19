@@ -1,4 +1,9 @@
 "use client";
+
+import React, { useEffect, useMemo, useState } from "react";
+import { PencilLine } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+
 import {
     Accordion,
     AccordionContent,
@@ -6,7 +11,6 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
-import React, { useEffect, useMemo, useState } from "react";
 import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,8 +19,7 @@ import { postMessageToGpt } from "../../_action/gpt-action";
 import { toast } from "sonner";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { FlowNodeStore, useFlowNodeStore } from "../../_store/agent-node-store";
-import { PencilLine } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
+import TitleSetting from "./title-setting";
 
 const selector = (state: FlowNodeStore) => ({
     flowNodes: state.flowNodes,
@@ -35,24 +38,24 @@ export default function SettingGPT() {
     );
 
     const [currTitle, setCurrTitle] = useState("");
-    const [systemPrompt, setSystemPrompt] = useState(
-        "You are a helpful assistant.",
-    );
+    const [systemPrompt, setSystemPrompt] = useState("");
     const [testMsg, setTestMsg] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [testGptAnswer, setTestGptAnswer] = useState("");
-    const [isEditTitle, setIsEditTitle] = useState(false);
-    const [isShowEdit, setShowEdit] = useState(false);
 
     useEffect(() => {
+        console.log("---init, currentNode:", currentNode);
         if (
             currentNode &&
             currentNode.data.metadata &&
-            currentNode.data.metadata.instructPrompt
+            currentNode.data.metadata.systemPrompt
         ) {
-            setSystemPrompt(currentNode.data.metadata.instructPrompt as string);
-            setCurrTitle(currentNode.data.title as string);
+            setSystemPrompt(currentNode.data.metadata.systemPrompt as string);
+        } else {
+            // init prompt
+            setSystemPrompt("You are a helpful assistant.");
         }
+        setCurrTitle(currentNode.data.title as string);
     }, [currentNode]);
 
     const saveGptTemplate = () => {
@@ -60,6 +63,7 @@ export default function SettingGPT() {
             ...currentNode,
             data: {
                 ...currentNode.data,
+                title: currTitle,
                 metadata: { ...currentNode.data.metadta, systemPrompt },
             },
         };
@@ -87,38 +91,11 @@ export default function SettingGPT() {
         <>
             <div className="px-2 py-4 text-center text-xl font-bold">
                 <div className="w-full flex justify-center items-center gap-4 px-2">
-                    {isEditTitle ? (
-                        <>
-                            <Input
-                                value={currTitle}
-                                onChange={(e) => setCurrTitle(e.target.value)}
-                            />
-                            <Button>Change</Button>
-                            <Button
-                                onClick={() => {
-                                    setIsEditTitle(false);
-                                    setShowEdit(false);
-                                }}
-                            >
-                                Cancel
-                            </Button>
-                        </>
-                    ) : (
-                        <div
-                            className="flex justify-center items-center px-4"
-                            onMouseEnter={() => setShowEdit(true)}
-                            onMouseLeave={() => setShowEdit(false)}
-                        >
-                            <span>GPT</span>
-                            {isShowEdit && (
-                                <PencilLine
-                                    className="w-[20px] h-[20px] hover:cursor-pointer hover:bg-secondary hover:text-primary rounded
-                    "
-                                    onClick={() => setIsEditTitle(true)}
-                                />
-                            )}
-                        </div>
-                    )}
+                    <TitleSetting
+                        currTitle={currTitle}
+                        setCurrTitle={setCurrTitle}
+                        saveCallback={saveGptTemplate}
+                    />
                 </div>
 
                 <br />
@@ -137,7 +114,7 @@ export default function SettingGPT() {
                     <AccordionContent>
                         {currentNode && (
                             <ConnectionCard
-                                title={currentNode.data.title}
+                                title={"GPT"}
                                 icon={currentNode.data.image}
                                 description={currentNode.data.description}
                             />
