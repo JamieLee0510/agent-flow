@@ -28,8 +28,9 @@ import { TriggerAgentNode } from "@/lib/agents/trigger-agent";
 import { GptAgentNode } from "@/lib/agents/gpt-agent";
 import { SlackAgentNode } from "@/lib/agents/slack-agent";
 import { useShallow } from "zustand/react/shallow";
+import { TabValue, useSideBarStore } from "../_store/side-bar-store";
 
-const selector = (state: FlowNodeStore) => ({
+const flowSelector = (state: FlowNodeStore) => ({
     flowNodes: state.flowNodes,
     flowEdges: state.flowEdges,
     currFlowNodeId: state.currFlowNodeId,
@@ -37,72 +38,38 @@ const selector = (state: FlowNodeStore) => ({
 
 export default function EditorCanvasSidebar() {
     const { flowNodes, flowEdges, currFlowNodeId } = useFlowNodeStore(
-        useShallow(selector),
+        useShallow(flowSelector),
     );
+
+    const { tabValue, setTabValue } = useSideBarStore((state) => ({
+        tabValue: state.tabValue,
+        setTabValue: state.setTabValue,
+    }));
 
     const currentNode = useMemo(
         () => flowNodes.filter((node) => node.id === currFlowNodeId)[0],
         [currFlowNodeId, flowNodes],
     );
-    const testAgent = () => {
-        const agentList: any[] = [];
-        flowNodes.forEach((flowNode) => {
-            switch (flowNode.type) {
-                case AgentType.Trigger:
-                    const triggerAgent = new TriggerAgentNode(
-                        flowNode.data.metadata.triggerText,
-                    );
-                    agentList.push(triggerAgent);
-                    break;
-                case AgentType.GPT:
-                    const gptAgent = new GptAgentNode(
-                        flowNode.data.metadata.systemPrompt,
-                    );
-                    agentList.push(gptAgent);
-                    break;
-                case AgentType.Slack:
-                    const { selectedSlackChannels, slackToken } =
-                        flowNode.data.metadata;
-                    const slackAgent = new SlackAgentNode(
-                        selectedSlackChannels,
-                        slackToken,
-                    );
-                    agentList.push(slackAgent);
-                    break;
-            }
-        });
-        for (let i = 0; i < flowEdges.length; i++) {
-            const currEdge = flowEdges[i];
-            const agentIdx = flowNodes.findIndex(
-                (node) => node.id == currEdge.source,
-            );
-            const nextAgentIdx = flowNodes.findIndex(
-                (node) => node.id == currEdge.target,
-            );
-            agentList[agentIdx].setNext(agentList[nextAgentIdx]);
-        }
-        const starterAgent =
-            agentList[
-                flowNodes.findIndex((node) => node.type == AgentType.Trigger)
-            ];
-        starterAgent.execute("").then((result: any) => {
-            console.log("---excute result:", result);
-        });
-    };
 
     return (
         <aside>
             <Tabs
-                defaultValue="actions"
+                value={tabValue}
+                onValueChange={(value) => {
+                    console.log(value);
+                    setTabValue(value as TabValue);
+                }}
                 className="h-screen overflow-scroll pb-24"
             >
                 <TabsList className="bg-transparent">
-                    <TabsTrigger value="actions">Actions</TabsTrigger>
-                    <TabsTrigger value="settings">Settings</TabsTrigger>
+                    <TabsTrigger value={TabValue.Action}>Actions</TabsTrigger>
+                    <TabsTrigger value={TabValue.Settings}>
+                        Settings
+                    </TabsTrigger>
                 </TabsList>
                 <Separator />
                 <TabsContent
-                    value="actions"
+                    value={TabValue.Action}
                     className="flex flex-col gap-4 p-4"
                 >
                     {Object.entries(AgentDefaultCards).map(
@@ -144,7 +111,7 @@ export default function EditorCanvasSidebar() {
                         },
                     )}
                 </TabsContent>
-                <TabsContent value="settings" className="-mt-6">
+                <TabsContent value={TabValue.Settings} className="-mt-6">
                     {currentNode ? (
                         <SettingNodes node={currentNode} />
                     ) : (
@@ -152,12 +119,6 @@ export default function EditorCanvasSidebar() {
                     )}
                 </TabsContent>
             </Tabs>
-            <Button
-                onClick={testAgent}
-                className="absolute top-0 right-2 rounded-2xl"
-            >
-                test agent
-            </Button>
         </aside>
     );
 }

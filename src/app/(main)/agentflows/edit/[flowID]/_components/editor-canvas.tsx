@@ -30,6 +30,8 @@ import { AgentType, EditorNodeType } from "@/lib/types";
 import EditorCanvasItem from "./editot-canvas-item";
 import { AgentDefaultCards } from "@/lib/const";
 import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
+import { Button } from "@/components/ui/button";
+import { executeAgentFlow } from "../_utils";
 
 // TODO: might need a start node and a end node;
 const selector = (state: FlowNodeStore) => ({
@@ -126,6 +128,14 @@ export default function EditorCanvas() {
                             }}
                             className="relative"
                         >
+                            <Button
+                                onClick={() =>
+                                    executeAgentFlow(flowNodes, flowEdges)
+                                }
+                                className="absolute z-20 top-2 right-2 rounded-2xl"
+                            >
+                                test agent
+                            </Button>
                             <ReactFlow
                                 className="w-[300px]"
                                 nodes={flowNodes}
@@ -142,7 +152,7 @@ export default function EditorCanvas() {
                             >
                                 <Controls position="top-left" />
                                 <MiniMap
-                                    position="bottom-left"
+                                    position="bottom-right"
                                     className="!bg-background"
                                     zoomable
                                     pannable
