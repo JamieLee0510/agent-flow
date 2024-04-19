@@ -10,7 +10,10 @@ import {
 } from "@/components/ui/card";
 import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
 import { useShallow } from "zustand/react/shallow";
-import { TabValue, useSideBarStore } from "../_store/side-bar-store";
+import {
+    TabValue,
+    usePanelControllStore,
+} from "../_store/pannel-controll-store";
 
 const selector = (state: FlowNodeStore) => ({
     currFlowNodeId: state.currFlowNodeId,
@@ -23,7 +26,7 @@ export default function EditorCanvasItem({ data }: any) {
     const { currFlowNodeId, setCurFlowNodeId } = useFlowNodeStore(
         useShallow(selector),
     );
-    const { setTabValue } = useSideBarStore((state) => ({
+    const { setTabValue } = usePanelControllStore((state) => ({
         setTabValue: state.setTabValue,
     }));
     const logo = useMemo(() => {
@@ -54,9 +57,7 @@ export default function EditorCanvasItem({ data }: any) {
                 <CardHeader className="flex flex-row items-center gap-4">
                     <div>{logo}</div>
                     <div>
-                        <CardTitle className="text-md">
-                            {data.title} {isSelected.toString()}
-                        </CardTitle>
+                        <CardTitle className="text-md">{data.title}</CardTitle>
                         <CardDescription>
                             <p className="text-xs text-muted-foreground/50">
                                 <b className="text-muted-foreground/80">ID: </b>

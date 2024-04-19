@@ -45,6 +45,8 @@ export const executeAgentFlow = (flowNodes: Node[], flowEdges: Edge[]) => {
         agentList[
             flowNodes.findIndex((node) => node.type == AgentType.Trigger)
         ];
+
+    // TODO: how to make agent effect the environment
     starterAgent.execute("").then((result: any) => {
         console.log("---excute result:", result);
     });

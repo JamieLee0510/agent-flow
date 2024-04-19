@@ -122,7 +122,18 @@ export default function SettingSlack() {
                                     icon={currentNode.data.image}
                                     description={currentNode.data.description}
                                 />
-                                <div className="p-10">
+                            </>
+                        )}
+                    </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="Expected Output" className="px-2">
+                    <AccordionTrigger className="!no-underline">
+                        Action
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <Card>
+                            <div className="flex flex-col gap-3 px-6 py-3 pb-20">
+                                <div className="p-5">
                                     {slackChannels?.length ? (
                                         <>
                                             <div className="mb-4 ml-1">
@@ -147,18 +158,13 @@ export default function SettingSlack() {
                                         "No Slack channels found. Please add your Slack bot to your Slack channel"
                                     )}
                                 </div>
-                            </>
-                        )}
-                    </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="Expected Output" className="px-2">
-                    <AccordionTrigger className="!no-underline">
-                        Action
-                    </AccordionTrigger>
-                    <AccordionContent>
-                        <Card>
-                            <div className="flex flex-col gap-3 px-6 py-3 pb-20">
-                                <p>Message</p>
+                                <Button
+                                    onClick={saveSlackTemplate}
+                                    variant="outline"
+                                >
+                                    Save Template
+                                </Button>
+                                <p className="mt-5">Test Message</p>
                                 <Input
                                     type="text"
                                     value={slackMsg}
@@ -166,18 +172,11 @@ export default function SettingSlack() {
                                         setSlackMsg(event.target.value)
                                     }
                                 />
-
                                 <Button
                                     variant="outline"
                                     onClick={onStoreSlackContent}
                                 >
-                                    Send Message
-                                </Button>
-                                <Button
-                                    onClick={saveSlackTemplate}
-                                    variant="outline"
-                                >
-                                    Save Template
+                                    Send Test Message
                                 </Button>
                             </div>
                         </Card>

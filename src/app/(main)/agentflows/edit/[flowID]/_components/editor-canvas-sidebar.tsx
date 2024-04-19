@@ -3,12 +3,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-} from "@/components/ui/accordion";
-import {
     Card,
     CardDescription,
     CardHeader,
@@ -23,12 +17,11 @@ import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
 import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
 import SettingNodes from "./setting-nodes";
-import { Button } from "@/components/ui/button";
-import { TriggerAgentNode } from "@/lib/agents/trigger-agent";
-import { GptAgentNode } from "@/lib/agents/gpt-agent";
-import { SlackAgentNode } from "@/lib/agents/slack-agent";
 import { useShallow } from "zustand/react/shallow";
-import { TabValue, useSideBarStore } from "../_store/side-bar-store";
+import {
+    TabValue,
+    usePanelControllStore,
+} from "../_store/pannel-controll-store";
 
 const flowSelector = (state: FlowNodeStore) => ({
     flowNodes: state.flowNodes,
@@ -41,7 +34,7 @@ export default function EditorCanvasSidebar() {
         useShallow(flowSelector),
     );
 
-    const { tabValue, setTabValue } = useSideBarStore((state) => ({
+    const { tabValue, setTabValue } = usePanelControllStore((state) => ({
         tabValue: state.tabValue,
         setTabValue: state.setTabValue,
     }));
