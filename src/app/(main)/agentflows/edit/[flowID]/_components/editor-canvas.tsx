@@ -1,5 +1,6 @@
 "use client";
 import React, { useCallback, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import ReactFlow, {
     Background,
@@ -28,9 +29,17 @@ import {
 import { AgentType, EditorNodeType } from "@/lib/types";
 import EditorCanvasItem from "./editot-canvas-item";
 import { AgentDefaultCards } from "@/lib/const";
-import { useFlowNodeStore } from "../_store/agent-node-store";
+import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
 
 // TODO: might need a start node and a end node;
+const selector = (state: FlowNodeStore) => ({
+    flowNodes: state.flowNodes,
+    flowEdges: state.flowEdges,
+    onNodesChange: state.onNodesChange,
+    onEdgesChange: state.onEdgesChange,
+    onConnect: state.onConnect,
+    setFlowNodes: state.setFlowNodes,
+});
 
 const nodeTypes = {
     [AgentType.Trigger]: EditorCanvasItem,
@@ -39,17 +48,14 @@ const nodeTypes = {
 };
 
 export default function EditorCanvas() {
-    const [nodes, setNodes, onNodesChange] = useNodesState([]);
-    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const { setFlowNodes, setFlowEdges } = useFlowNodeStore();
-
-    useEffect(() => {
-        setFlowNodes(nodes);
-    }, [nodes]);
-
-    useEffect(() => {
-        setFlowEdges(edges);
-    }, [edges]);
+    const {
+        flowNodes,
+        setFlowNodes,
+        onNodesChange,
+        flowEdges,
+        onEdgesChange,
+        onConnect,
+    } = useFlowNodeStore(useShallow(selector));
 
     const [reactFlowInstance, setReactFlowInstance] =
         useState<ReactFlowInstance>();
@@ -88,10 +94,10 @@ export default function EditorCanvas() {
                     type: type,
                 },
             };
-
-            setNodes((nds) => nds.concat(newNode));
+            const newNodes = flowNodes.concat(newNode);
+            setFlowNodes(newNodes);
         },
-        [reactFlowInstance],
+        [flowNodes, reactFlowInstance],
     );
 
     // react flow example
@@ -100,59 +106,58 @@ export default function EditorCanvas() {
         event.dataTransfer.dropEffect = "move";
     }, []);
 
-    const onConnect = useCallback((params: any) => {
-        setEdges((eds) => addEdge(params, eds));
-    }, []);
     const handleClickCanvas = (data: any) => {
         // TODO: setting info in sidebar
         // so need state of "current node"
     };
     return (
-        <ResizablePanelGroup direction="horizontal">
-            <ResizablePanel defaultSize={70}>
-                <div className="flex h-full items-center justify-center">
-                    <div
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            paddingBottom: "70px",
-                        }}
-                        className="relative"
-                    >
-                        <ReactFlow
-                            className="w-[300px]"
-                            nodes={nodes}
-                            edges={edges}
-                            onDrop={onDrop}
-                            onDragOver={onDragOver}
-                            onNodesChange={onNodesChange}
-                            onEdgesChange={onEdgesChange}
-                            onConnect={onConnect}
-                            onInit={setReactFlowInstance}
-                            fitView
-                            onClick={handleClickCanvas}
-                            nodeTypes={nodeTypes}
+        <>
+            <ResizablePanelGroup direction="horizontal">
+                <ResizablePanel defaultSize={30} className="relative sm:block">
+                    <EditorCanvasSidebar />
+                </ResizablePanel>
+                <ResizablePanel defaultSize={70}>
+                    <div className="flex h-full items-center justify-center">
+                        <div
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                paddingBottom: "70px",
+                            }}
+                            className="relative"
                         >
-                            <Controls position="top-left" />
-                            <MiniMap
-                                position="bottom-left"
-                                className="!bg-background"
-                                zoomable
-                                pannable
-                            />
-                            <Background
-                                //@ts-ignore
-                                variant="dots"
-                                gap={12}
-                                size={1}
-                            />
-                        </ReactFlow>
+                            <ReactFlow
+                                className="w-[300px]"
+                                nodes={flowNodes}
+                                edges={flowEdges}
+                                onDrop={onDrop}
+                                onDragOver={onDragOver}
+                                onNodesChange={onNodesChange}
+                                onEdgesChange={onEdgesChange}
+                                onConnect={onConnect}
+                                onInit={setReactFlowInstance}
+                                fitView
+                                onClick={handleClickCanvas}
+                                nodeTypes={nodeTypes}
+                            >
+                                <Controls position="top-left" />
+                                <MiniMap
+                                    position="bottom-left"
+                                    className="!bg-background"
+                                    zoomable
+                                    pannable
+                                />
+                                <Background
+                                    //@ts-ignore
+                                    variant="dots"
+                                    gap={12}
+                                    size={1}
+                                />
+                            </ReactFlow>
+                        </div>
                     </div>
-                </div>
-            </ResizablePanel>
-            <ResizablePanel defaultSize={40} className="relative sm:block">
-                <EditorCanvasSidebar nodes={nodes} />
-            </ResizablePanel>
-        </ResizablePanelGroup>
+                </ResizablePanel>
+            </ResizablePanelGroup>
+        </>
     );
 }

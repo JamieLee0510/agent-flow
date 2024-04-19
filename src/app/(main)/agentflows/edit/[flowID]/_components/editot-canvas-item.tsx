@@ -13,7 +13,9 @@ import { useFlowNodeStore } from "../_store/agent-node-store";
 // TODO: data type
 export default function EditorCanvasItem({ data }: any) {
     const nodeId = useNodeId();
-    const { setCurFlowNodeId } = useFlowNodeStore();
+    const setCurFlowNodeId = useFlowNodeStore(
+        (state) => state.setCurFlowNodeId,
+    );
     const logo = useMemo(() => {
         return <EditorAgentIcon type={data.type} />;
     }, [data]);
@@ -47,11 +49,13 @@ export default function EditorCanvasItem({ data }: any) {
                     </div>
                 </CardHeader>
             </Card>
-            <Handle
-                type="source"
-                position={Position.Bottom}
-                style={{ zIndex: 100 }}
-            />
+            {data.type !== AgentType.Slack && (
+                <Handle
+                    type="source"
+                    position={Position.Bottom}
+                    style={{ zIndex: 100 }}
+                />
+            )}
         </>
     );
 }

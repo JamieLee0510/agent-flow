@@ -16,28 +16,35 @@ import {
 } from "@/components/ui/card";
 
 import { AgentDefaultCards, CurrentDisableAgent } from "@/lib/const";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { onDragStart } from "@/lib/editor-utils";
 import EditorAgentIcon from "./editor-agent-icon";
 import { AgentType } from "@/lib/types";
-import { useCurrFlowNodes, useFlowNodeStore } from "../_store/agent-node-store";
+import { FlowNodeStore, useFlowNodeStore } from "../_store/agent-node-store";
 import SettingNodes from "./setting-nodes";
 import { Button } from "@/components/ui/button";
 import { TriggerAgentNode } from "@/lib/agents/trigger-agent";
 import { GptAgentNode } from "@/lib/agents/gpt-agent";
 import { SlackAgentNode } from "@/lib/agents/slack-agent";
+import { useShallow } from "zustand/react/shallow";
 
-type Props = {
-    nodes: any[];
-};
+const selector = (state: FlowNodeStore) => ({
+    flowNodes: state.flowNodes,
+    flowEdges: state.flowEdges,
+    currFlowNodeId: state.currFlowNodeId,
+});
 
-export default function EditorCanvasSidebar({ nodes }: Props) {
-    const { flowNodes, flowEdges, currentNode } = useCurrFlowNodes();
+export default function EditorCanvasSidebar() {
+    const { flowNodes, flowEdges, currFlowNodeId } = useFlowNodeStore(
+        useShallow(selector),
+    );
+
+    const currentNode = useMemo(
+        () => flowNodes.filter((node) => node.id === currFlowNodeId)[0],
+        [currFlowNodeId, flowNodes],
+    );
     const testAgent = () => {
-        console.log("---flowNodes:", flowNodes);
-        console.log("---flowEdges:", flowEdges);
-
         const agentList: any[] = [];
         flowNodes.forEach((flowNode) => {
             switch (flowNode.type) {
@@ -81,14 +88,6 @@ export default function EditorCanvasSidebar({ nodes }: Props) {
         starterAgent.execute("").then((result: any) => {
             console.log("---excute result:", result);
         });
-        // for (let i = 0; i < agentList.length - 1; i++) {
-        //     const currAgent = agentList[i];
-        //     const nextAgent = agentList[i + 1];
-        //     currAgent.setNext(nextAgent);
-        // }
-        // agentList[0].execute("").then((result: any) => {
-        //     console.log(result); // 输出最终结果
-        // });
     };
 
     return (

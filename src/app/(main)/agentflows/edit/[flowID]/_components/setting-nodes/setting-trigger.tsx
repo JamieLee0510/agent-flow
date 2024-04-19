@@ -1,6 +1,6 @@
 "use client";
 
-import ConnectionCard from "@/app/(main)/connections/_components/connection-card";
+import { useShallow } from "zustand/react/shallow";
 import {
     Accordion,
     AccordionContent,
@@ -8,22 +8,47 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
-import { useSlackStore } from "@/store";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
-import MultipleSelector from "@/components/ui/multiple-selector";
 import { Button } from "@/components/ui/button";
-import { postMessageToSlack } from "../../_action/slack-actions";
 import { toast } from "sonner";
-import { getChannelList } from "@/app/_services/slack";
-import { useCurrFlowNodes } from "../../_store/agent-node-store";
+import { FlowNodeStore, useFlowNodeStore } from "../../_store/agent-node-store";
+
+const selector = (state: FlowNodeStore) => ({
+    flowNodes: state.flowNodes,
+    setFlowNodes: state.setFlowNodes,
+    currFlowNodeId: state.currFlowNodeId,
+});
 
 export default function SettingTrigger() {
-    const { currentNode, saveCurrNodeMetadata } = useCurrFlowNodes();
+    const { flowNodes, setFlowNodes, currFlowNodeId } = useFlowNodeStore(
+        useShallow(selector),
+    );
+
+    const currentNode = useMemo(
+        () => flowNodes.filter((node) => node.id === currFlowNodeId)[0],
+        [currFlowNodeId, flowNodes],
+    );
     const [triggerText, setTriggerText] = useState("");
 
+    useEffect(() => {
+        setTriggerText(currentNode.data.metadata.triggerText);
+    }, [currentNode]);
+
     const saveTriggerTemplate = () => {
-        saveCurrNodeMetadata({ triggerText });
+        const newNodeData = {
+            ...currentNode,
+            data: {
+                ...currentNode.data,
+                metadata: { triggerText },
+            },
+        };
+        const newFlowNodes = flowNodes.map((node) =>
+            node.id === newNodeData.id ? { ...node, ...newNodeData } : node,
+        );
+
+        setFlowNodes(newFlowNodes);
+
         toast.success("save trigger template successfully");
     };
 

@@ -1,17 +1,11 @@
 "use client";
 import React from "react";
 import {
-    Calendar,
     CircuitBoard,
-    Database,
     GitBranch,
-    HardDrive,
     Mail,
     MousePointerClickIcon,
-    Plus,
     Slack,
-    Timer,
-    Webhook,
     Zap,
 } from "lucide-react";
 import { AgentType } from "@/lib/types";
