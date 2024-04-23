@@ -25,6 +25,12 @@ export type FlowNodeStore = {
 
     currFlowNodeId: string | null;
     setCurFlowNodeId: (currFlowNodeId: string | null) => void;
+
+    nodesDraggable: boolean;
+    setNodesDraggle: (nodesDraggable: boolean) => void;
+
+    currExecuteNodeID: string | null;
+    setCurrExecuteNodeID: (currExecuteNodeID: string | null) => void;
 };
 
 export const useFlowNodeStore = create<FlowNodeStore>((set, get) => ({
@@ -54,4 +60,11 @@ export const useFlowNodeStore = create<FlowNodeStore>((set, get) => ({
 
     currFlowNodeId: null,
     setCurFlowNodeId: (currFlowNodeId) => set({ currFlowNodeId }),
+
+    nodesDraggable: true,
+    setNodesDraggle: (nodesDraggable: boolean) => set({ nodesDraggable }),
+
+    currExecuteNodeID: null,
+    setCurrExecuteNodeID: (currExecuteNodeID: string | null) =>
+        set({ currExecuteNodeID }),
 }));

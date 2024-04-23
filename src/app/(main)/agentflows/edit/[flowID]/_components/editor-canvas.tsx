@@ -41,6 +41,9 @@ const selector = (state: FlowNodeStore) => ({
     onEdgesChange: state.onEdgesChange,
     onConnect: state.onConnect,
     setFlowNodes: state.setFlowNodes,
+    nodesDraggable: state.nodesDraggable,
+    currExecuteNodeID: state.currExecuteNodeID,
+    setCurrExecuteNodeID: state.setCurrExecuteNodeID,
 });
 
 const nodeTypes = {
@@ -57,6 +60,9 @@ export default function EditorCanvas() {
         flowEdges,
         onEdgesChange,
         onConnect,
+        nodesDraggable,
+        currExecuteNodeID,
+        setCurrExecuteNodeID,
     } = useFlowNodeStore(useShallow(selector));
 
     const [reactFlowInstance, setReactFlowInstance] =
@@ -111,6 +117,9 @@ export default function EditorCanvas() {
     const handleClickCanvas = (data: any) => {
         // TODO: setting info in sidebar
         // so need state of "current node"
+        if (!nodesDraggable) {
+            alert("Current flow is executing!");
+        }
     };
     return (
         <>
@@ -130,13 +139,18 @@ export default function EditorCanvas() {
                         >
                             <Button
                                 onClick={() =>
-                                    executeAgentFlow(flowNodes, flowEdges)
+                                    executeAgentFlow(
+                                        flowNodes,
+                                        flowEdges,
+                                        setCurrExecuteNodeID,
+                                    )
                                 }
                                 className="absolute z-20 top-2 right-2 rounded-2xl"
                             >
-                                test agent
+                                test agent:{currExecuteNodeID}
                             </Button>
                             <ReactFlow
+                                aria-disabled={true}
                                 className="w-[300px]"
                                 nodes={flowNodes}
                                 edges={flowEdges}
@@ -149,6 +163,7 @@ export default function EditorCanvas() {
                                 fitView
                                 onClick={handleClickCanvas}
                                 nodeTypes={nodeTypes}
+                                nodesDraggable={nodesDraggable}
                             >
                                 <Controls position="top-left" />
                                 <MiniMap

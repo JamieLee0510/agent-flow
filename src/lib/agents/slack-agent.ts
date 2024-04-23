@@ -5,8 +5,13 @@ import { AgentType } from "../types";
 export class SlackAgentNode<T = any, R = any> extends AgentNode<T, R> {
     agentType = AgentType.Slack;
 
-    constructor(channelList: string[], accessToken: string) {
-        super();
+    constructor(
+        channelList: string[],
+        accessToken: string,
+        id: string,
+        setCurrExecude: (id: string | null) => void,
+    ) {
+        super(id, setCurrExecude);
 
         const asyncFunction: (
             data: string,
