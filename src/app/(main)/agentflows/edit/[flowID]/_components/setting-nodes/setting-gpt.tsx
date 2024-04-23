@@ -59,12 +59,21 @@ export default function SettingGPT() {
     }, [currentNode]);
 
     const saveGptTemplate = () => {
+        const openaiKey = window.sessionStorage.getItem("openai_key");
+        if (!openaiKey) {
+            toast.error("empty openai key, could connect first");
+            return;
+        }
         const newNodeData = {
             ...currentNode,
             data: {
                 ...currentNode.data,
                 title: currTitle,
-                metadata: { ...currentNode.data.metadta, systemPrompt },
+                metadata: {
+                    ...currentNode.data.metadta,
+                    systemPrompt,
+                    openaiKey: "",
+                },
             },
         };
 
@@ -78,7 +87,16 @@ export default function SettingGPT() {
     const testGPTHandler = async () => {
         setTestGptAnswer("");
         setIsLoading(true);
-        const message = await postMessageToGpt(systemPrompt, testMsg);
+        const openaiKey = window.sessionStorage.getItem("openai_key");
+        if (!openaiKey) {
+            toast.error("empty openai key, could connect first");
+            return;
+        }
+        const message = await postMessageToGpt(
+            systemPrompt,
+            testMsg,
+            openaiKey,
+        );
         if (message == "Something wrong with GPT") {
             toast.error(message);
         } else {

@@ -1,17 +1,18 @@
 "use server";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-    apiKey: process.env.OEPNAI_API_KEY,
-});
-
 export const generateAnswer = async ({
     systemPrompt,
     userPrompt,
+    openaiKey,
 }: {
     systemPrompt: string;
     userPrompt: string;
+    openaiKey: string;
 }) => {
+    const openai = new OpenAI({
+        apiKey: openaiKey,
+    });
     const completion = await openai.chat.completions.create({
         messages: [
             { role: "system", content: systemPrompt },
@@ -19,6 +20,5 @@ export const generateAnswer = async ({
         ],
         model: "gpt-3.5-turbo",
     });
-
     return completion.choices[0].message.content;
 };
