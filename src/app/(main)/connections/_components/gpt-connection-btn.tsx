@@ -20,11 +20,13 @@ import { toast } from "sonner";
 export default function GptConnectionCard() {
     const [isConnected, setIsConnected] = useState(false);
     const [openaiKey, setOpenaiKey] = useState("");
+    const [showDialog, setShowDialog] = useState(false);
 
     const saveHandler = () => {
         if (openaiKey) {
             window.sessionStorage.setItem("openai_key", openaiKey);
             setIsConnected(true);
+            setShowDialog(false);
             toast.success("Saved in session storage");
         } else {
             toast.error("key cannot be empty");
@@ -40,35 +42,44 @@ export default function GptConnectionCard() {
 
     return (
         <div className="flex flex-row items-center gap-2 p-4">
-            <Dialog>
+            <Dialog
+                open={showDialog}
+                onOpenChange={(value) => setShowDialog(value)}
+            >
                 {isConnected ? (
                     <>
                         <div className="border-bg-primary rounded-lg border-2 px-3 py-2 font-bold text-white">
                             Connected
                         </div>
-                        <DialogTrigger className="bg-primary rounded-lg p-2 font-bold text-primary-foreground">
+                        <Button
+                            onClick={() => setShowDialog(true)}
+                            className="bg-primary rounded-lg p-2 font-bold text-primary-foreground"
+                        >
                             Change
-                        </DialogTrigger>
+                        </Button>
                     </>
                 ) : (
-                    <DialogTrigger className="bg-primary rounded-lg p-2 font-bold text-primary-foreground">
+                    <Button
+                        onClick={() => setShowDialog(true)}
+                        className="bg-primary rounded-lg p-2 font-bold text-primary-foreground"
+                    >
                         Connect
-                    </DialogTrigger>
+                    </Button>
                 )}
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Enter your OPENAI KEY</DialogTitle>
                         <DialogDescription>
-                            It will be just save in browser session storage.
+                            It will be just saved in browser session storage.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="flex items-center space-x-2">
-                        <div className="grid flex-1 gap-2">
-                            <Input
-                                value={openaiKey}
-                                onChange={(e) => setOpenaiKey(e.target.value)}
-                            />
-                        </div>
+                    <div className="flex items-center justify-center space-x-2">
+                        <Input
+                            value={openaiKey}
+                            onChange={(e) => setOpenaiKey(e.target.value)}
+                            type="password"
+                        />
+
                         <Button
                             size="sm"
                             className="px-3"
@@ -84,7 +95,11 @@ export default function GptConnectionCard() {
                     </div>
                     <DialogFooter className="sm:justify-start">
                         <DialogClose asChild>
-                            <Button type="button" variant="secondary">
+                            <Button
+                                onClick={() => setShowDialog(false)}
+                                type="button"
+                                variant="secondary"
+                            >
                                 Close
                             </Button>
                         </DialogClose>

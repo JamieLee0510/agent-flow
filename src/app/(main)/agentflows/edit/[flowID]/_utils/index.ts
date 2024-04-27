@@ -94,7 +94,12 @@ export const executeAgentFlow = (
         ];
 
     // TODO: how to make agent effect the environment
-    starterAgent.execute("").then((result: any) => {
-        console.log("---excute result:", result);
-    });
+    try {
+        starterAgent.execute("").then((result: any) => {
+            console.log("---excute result:", result);
+            toast.success("test agent flow successfully");
+        });
+    } catch (err: any) {
+        toast.error(err);
+    }
 };

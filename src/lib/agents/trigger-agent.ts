@@ -9,6 +9,11 @@ export class TriggerAgentNode<T = any, R = any> extends AgentNode<T, R> {
         setCurrExecude: (id: string | null) => void,
     ) {
         super(id, setCurrExecude);
-        this.setFunc((_) => new Promise((resolve, _) => resolve(triggerText)));
+        this.setFunc(
+            (_) =>
+                new Promise((resolve, _) =>
+                    setTimeout(() => resolve(triggerText), 1000),
+                ),
+        );
     }
 }

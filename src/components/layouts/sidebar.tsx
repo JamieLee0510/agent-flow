@@ -9,7 +9,7 @@ const Sidebar = () => {
     const pathName = usePathname();
     return (
         <nav className="dark:bg-black h-screen overflow-scroll flex flex-col items-center justify-start gap-5 py-6 px-2">
-            <div className="flex items-center justify-center flex-col gap-8">
+            <div className="flex items-center justify-start flex-col gap-8 text-center ">
                 <Link href="/">DnD Agent</Link>
             </div>
             {sideMenuOptions.map((menuItem) => {
