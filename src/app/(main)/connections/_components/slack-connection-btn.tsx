@@ -30,14 +30,14 @@ export default function SlackConnectionCard() {
                     Connected
                 </div>
             ) : (
-                <div
+                <Button
                     className="bg-primary rounded-lg p-2 font-bold text-primary-foreground"
                     onClick={() =>
                         router.push(process.env.NEXT_PUBLIC_SLACK_REDIRECT!)
                     }
                 >
                     Connect
-                </div>
+                </Button>
             )}
         </div>
     );

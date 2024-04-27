@@ -72,7 +72,7 @@ export default function SettingGPT() {
                 metadata: {
                     ...currentNode.data.metadta,
                     systemPrompt,
-                    openaiKey: "",
+                    openaiKey,
                 },
             },
         };

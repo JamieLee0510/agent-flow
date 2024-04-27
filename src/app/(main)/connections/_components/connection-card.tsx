@@ -22,7 +22,6 @@ type Props = {
     description: string;
     callback?: () => void;
 };
-import { useSearchParams } from "next/navigation";
 import { AgentType } from "@/lib/types";
 
 const ConnectionCard = ({ icon, title, description }: Props) => {
