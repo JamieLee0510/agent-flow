@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# DnD Agent Flow
 
-## Getting Started
+## Functional Preview
 
-First, run the development server:
+[Youtube chip](https://youtu.be/NLdP5DEgYPk)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Run the project
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+-   create `.env` file, and also set environment variables according to `.env.example`
+    -   there are some variables related with Slack, could refer [slack api](https://api.slack.com/)
+-   `$ npm install`
+-   `$ npm run dev`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Description
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+The project is to demo self-make agent sass. Users could make their own agent flow just by drag-and-drop.
 
-## Learn More
+The idea is inlighted from [Coze](https://www.coze.com/home) , and the ui design is referred the awesome project [fuzzie](https://github.com/webprodigies/fuzzie-production)
 
-To learn more about Next.js, take a look at the following resources:
+This project is built in NextJS + Tailwind + ReactFlow.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# ChangeLog
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+-   20240427 - basic feature completed
