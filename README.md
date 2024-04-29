@@ -2,7 +2,8 @@
 
 ## Functional Preview
 
-[Youtube chip](https://youtu.be/NLdP5DEgYPk)
+-   [Youtube chip](https://youtu.be/NLdP5DEgYPk)
+-   Could check the [demo website](https://agent-flow.vercel.app/), but features related with slack would not work due to settings.
 
 ## Run the project
 
